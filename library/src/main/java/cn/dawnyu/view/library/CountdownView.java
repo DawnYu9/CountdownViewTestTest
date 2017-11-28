@@ -123,9 +123,13 @@ public class CountdownView extends View {
      *                    例："dd天hh:mm:ss", "hh小时mm分钟ss秒"
      */
     public void start(long millisecond, String mTimeFormat) {
-        this.mTimeFormat = mTimeFormat;
+        if (millisecond <= 0) {
+            return;
+        }
 
-        if (millisecond <= 0) return;
+        if (!Utils.isNullOrEmpty(mTimeFormat)) {
+            this.mTimeFormat = mTimeFormat;
+        }
 
         mDay = (int) (millisecond / 1000 / (60 * 60 * 24));
         mHour = (int) ((millisecond / 1000 / (60 * 60)) % 24);
@@ -203,7 +207,6 @@ public class CountdownView extends View {
 
         //Has day
         if (mIndexDay > -1) {
-//            mTimeCount++;
             showDays = true;
 
             //Has day suffix
@@ -291,7 +294,7 @@ public class CountdownView extends View {
     }
 
     private int getTotalHeight() {
-        return (int) Math.ceil(Math.max(Math.max(mTimeTextHeight, mSuffixTextHeight), mTimeBackgroundBitmap.getHeight()));
+        return (int) Math.ceil(Math.max(Math.max(mTimeTextHeight, mSuffixTextHeight), mTimeBackgroundBitmap == null ? 0 : mTimeBackgroundBitmap.getHeight()));
     }
 
     @Override
