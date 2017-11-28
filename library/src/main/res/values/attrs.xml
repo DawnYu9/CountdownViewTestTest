@@ -3,7 +3,7 @@
     <declare-styleable name="CountdownView">
         <attr name="timeTextSize" format="dimension" />
         <attr name="timeTextColor" format="color" />
-        <attr name="timeBackground" format="reference" />
+        <attr name="timeBackground" format="reference|color" />
         <attr name="timeTextCharMargin" format="dimension" />
         <attr name="timeTextCharBackgroundWidth" format="dimension" />
         <attr name="timeTextCharBackgroundHeight" format="dimension" />
@@ -11,8 +11,8 @@
 
         <attr name="suffixTextSize" format="dimension" />
         <attr name="suffixTextColor" format="color" />
+        <attr name="suffixBackground" format="reference|color" />
         <attr name="suffixTextCharMargin" format="dimension" />
-        <attr name="suffixBackground" format="reference" />
         <attr name="suffixTextCharBackgroundWidth" format="dimension" />
         <attr name="suffixTextCharBackgroundHeight" format="dimension" />
         <attr name="isSuffixTextBold" format="boolean" />

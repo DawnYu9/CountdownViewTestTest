@@ -21,4 +21,9 @@
         cus:timeTextColor="#ffffff"
         cus:timeTextSize="13sp" />
 
+    <TextView
+        android:layout_width="100dp"
+        android:layout_height="20dp"
+        android:layout_marginTop="20dp"
+        android:background="#FF4081" />
 </LinearLayout>

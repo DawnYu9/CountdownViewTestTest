@@ -23,7 +23,7 @@ import android.view.View;
  * 例："dd天hh:mm:ss", "hh小时mm分钟ss秒"
  * <p>
  * date: 17/11/24
- * version: 1.0.171124
+ * version: 0.1.0
  */
 
 public class CountdownView extends View {
@@ -34,6 +34,7 @@ public class CountdownView extends View {
     private int mTimeTextSize;
     private int mTimeTextColor;
     private int mTimeBackground;
+    private Drawable mTimeBackgroundDrawable;
     private boolean isTimeTextBold;
     private float mTimeTextHeight;
     private float mTimeTextCharBackgroundWidth;
@@ -76,8 +77,8 @@ public class CountdownView extends View {
     public long mDay, mHour, mMinute, mSecond;
 
     private float mTimeTextCharActualWidth;
-    private Bitmap mTimeBackgroundBitmap;
-    private Bitmap mSuffixBackgroundBitmap;
+//    private Bitmap mTimeBackgroundBitmap;
+//    private Bitmap mSuffixBackgroundBitmap;
 
     private MyCountDownTimer myCountDownTimer;
 
@@ -98,6 +99,7 @@ public class CountdownView extends View {
         mTimeTextColor = mTypedArray.getColor(R.styleable.CountdownView_timeTextColor, Color.BLACK);
 
         mTimeBackground = mTypedArray.getResourceId(R.styleable.CountdownView_timeBackground, 0);
+        mTimeBackgroundDrawable = mTypedArray.getDrawable(R.styleable.CountdownView_timeBackground);
 
         mTimeTextCharMargin = mTypedArray.getDimensionPixelSize(R.styleable.CountdownView_timeTextCharMargin, Utils.getDip2Px(context, 0));
         mTimeTextCharBackgroundWidth = mTypedArray.getDimensionPixelSize(R.styleable.CountdownView_timeTextCharBackgroundWidth, Utils.getDip2Px(context, 0));
@@ -147,7 +149,7 @@ public class CountdownView extends View {
     private void init() {
         initPaint();
 
-        initBackground();
+//        initBackground();
 
         initTimeTextBounds();
 
@@ -191,8 +193,8 @@ public class CountdownView extends View {
     }
 
     private void initBackground() {
-        mTimeBackgroundBitmap = getBitmap(mTimeBackground);
-        mSuffixBackgroundBitmap = getBitmap(mSuffixBackground);
+//        mTimeBackgroundBitmap = getBitmap(mTimeBackground);
+//        mSuffixBackgroundBitmap = getBitmap(mSuffixBackground);
     }
 
     private void initSuffix() {
@@ -294,7 +296,7 @@ public class CountdownView extends View {
     }
 
     private int getTotalHeight() {
-        return (int) Math.ceil(Math.max(Math.max(mTimeTextHeight, mSuffixTextHeight), mTimeBackgroundBitmap == null ? 0 : mTimeBackgroundBitmap.getHeight()));
+        return (int) Math.ceil(Math.max(Math.max(mTimeTextHeight, mSuffixTextHeight), mTimeTextCharBackgroundHeight));
     }
 
     @Override
@@ -374,8 +376,9 @@ public class CountdownView extends View {
     private float drawTimeSuffixItem(Canvas canvas, float left, String timeString, String timeSuffix, float suffixTextWidth) {
         for (int i = 0; i < timeString.length(); i++) {
             //Draw time background
-            if (mTimeBackgroundBitmap != null) {
-                canvas.drawBitmap(mTimeBackgroundBitmap, left, 0, mTimeBackgroundPaint);
+            if (mTimeBackgroundDrawable != null) {
+                mTimeBackgroundDrawable.setBounds((int) left, 0, (int) (left + mTimeTextCharBackgroundWidth), (int) mTimeTextCharBackgroundHeight);
+                mTimeBackgroundDrawable.draw(canvas);
             }
 
             //Draw time text
