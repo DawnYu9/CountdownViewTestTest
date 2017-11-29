@@ -84,4 +84,14 @@ public class Utils {
 
         return percent + "%";
     }
+
+    public static float getMaxNum(float[] numArray) {
+        float max = numArray[0];
+        for (float num : numArray) {
+            if (max < num) {
+                max = num;
+            }
+        }
+        return max;
+    }
 }

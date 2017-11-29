@@ -10,20 +10,15 @@
         android:id="@+id/countdownView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        cus:suffixTextCharBackgroundHeight="16dp"
+        cus:suffixBackground="@color/colorPrimary"
         cus:suffixTextCharMargin="2dp"
-        cus:suffixTextColor="#394043"
-        cus:suffixTextSize="16sp"
+        cus:suffixTextColor="#ffffff"
+        cus:suffixTextSize="40sp"
         cus:timeBackground="@drawable/shape_solid_corner_3_pink"
-        cus:timeTextCharBackgroundHeight="16dp"
-        cus:timeTextCharBackgroundWidth="10dp"
+        cus:timeBackgroundHeight="16dp"
+        cus:timeBackgroundWidth="10dp"
         cus:timeTextCharMargin="2dp"
         cus:timeTextColor="#ffffff"
         cus:timeTextSize="13sp" />
 
-    <TextView
-        android:layout_width="100dp"
-        android:layout_height="20dp"
-        android:layout_marginTop="20dp"
-        android:background="#FF4081" />
 </LinearLayout>
