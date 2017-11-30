@@ -16,10 +16,9 @@
         cus:suffixTextSize="16sp"
         cus:timeBackground="@color/colorAccent"
         cus:timeBackgroundPadding="5dp"
-        cus:timeTextLetterBackgroundSpacing="5dp"
-        cus:isTimeTextBold="true"
-        cus:timeTextLetterSpacing="5dp"
         cus:timeTextColor="#ffffff"
+        cus:timeTextLetterBackgroundSpacing="5dp"
+        cus:timeTextLetterSpacing="5dp"
         cus:timeTextSize="13sp" />
 
 </LinearLayout>

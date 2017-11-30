@@ -69,12 +69,12 @@ public class CountdownView extends View {
     //----------------------------- attrs end ---------------------------//
 
     //---------------------- calculate values start --------------------//
-    private float mTimeTextHeight;
+    private float mTimeTextMeasuredHeight;
     private float mTimeTextTotalWidth;
     private float mTimeTextLetterMeasuredWidth;
     private float mSuffixTextTotalWidth;
     private float mSuffixTextSingleWidth;
-    private float mSuffixTextHeight;
+    private float mSuffixTextMeasuredHeight;
     private float mSuffixDayDeltY2Base;
     private float mSuffixHourDeltY2Base;
     private float mSuffixMinuteDeltY2Base;
@@ -83,6 +83,20 @@ public class CountdownView extends View {
     private float mSuffixHourBaseline;
     private float mSuffixMinuteBaseline;
     private float mSuffixSecondBaseline;
+
+    private float drawTimeBackgroundWidth = 0;
+    private float drawTimeBackgroundHeight = 0;
+    private float drawTimeBackgroundPaddingLeft = 0;
+    private float drawTimeBackgroundPaddingRight = 0;
+    private float drawTimeBackgroundPaddingTop = 0;
+    private float drawTimeBackgroundPaddingBottom = 0;
+
+    private float drawSuffixBackgroundWidth = 0;
+    private float drawSuffixBackgroundHeight = 0;
+    private float drawSuffixBackgroundPaddingLeft = 0;
+    private float drawSuffixBackgroundPaddingRight = 0;
+    private float drawSuffixBackgroundPaddingTop = 0;
+    private float drawSuffixBackgroundPaddingBottom = 0;
     //---------------------- calculate values end --------------------//
 
     /**
@@ -200,6 +214,7 @@ public class CountdownView extends View {
 
         initTimeTextBounds();
         initSuffixTextBounds();
+        initDrawValues();
     }
 
     private void initPadding() {
@@ -348,11 +363,7 @@ public class CountdownView extends View {
     private void initTimeTextBounds() {
         Rect rect = getTextBounds("0", mTimeTextPaint);
         mTimeTextLetterMeasuredWidth = rect.width();
-        mTimeTextHeight = rect.height();
-
-        if (mTimeBackgroundHeight == 0) {
-            mTimeBackgroundHeight = mTimeTextHeight + mTimeBackgroundPaddingTop + mTimeBackgroundPaddingBottom;
-        }
+        mTimeTextMeasuredHeight = rect.height();
     }
 
     private void initSuffixTextBounds() {
@@ -361,16 +372,70 @@ public class CountdownView extends View {
         mSuffixMinuteDeltY2Base = getSuffixDeltY2Base(mSuffixMinute);
         mSuffixSecondDeltY2Base = getSuffixDeltY2Base(mSuffixSecond);
 
-        if (mSuffixBackgroundHeight == 0) {
-            mSuffixBackgroundHeight = mSuffixTextHeight + mSuffixBackgroundPaddingTop + mSuffixBackgroundPaddingBottom;
-        }
-
         float deltHeight = getTotalContentHeight() / 2;
 
         mSuffixDayBaseline = deltHeight - mSuffixDayDeltY2Base;
         mSuffixHourBaseline = deltHeight - mSuffixHourDeltY2Base;
         mSuffixMinuteBaseline = deltHeight - mSuffixMinuteDeltY2Base;
         mSuffixSecondBaseline = deltHeight - mSuffixSecondDeltY2Base;
+    }
+
+    private void initDrawValues() {
+        //Time values.
+        drawTimeBackgroundPaddingLeft = mTimeBackgroundPaddingLeft;
+        drawTimeBackgroundPaddingRight = mTimeBackgroundPaddingRight;
+        drawTimeBackgroundPaddingTop = mTimeBackgroundPaddingTop;
+        drawTimeBackgroundPaddingBottom = mTimeBackgroundPaddingBottom;
+
+        //Height values.
+        if (mTimeBackgroundHeight > 0) { //If has specified the size of @timeBackgroundHeight.
+            if (mTimeBackgroundHeight < mTimeTextMeasuredHeight) {
+                drawTimeBackgroundHeight = mTimeTextMeasuredHeight;
+                drawTimeBackgroundPaddingTop = drawTimeBackgroundPaddingBottom = 0;
+            } else {
+                /*
+                 * If the size of @timeBackgroundHeight has been specified by users,
+                 * the paddings will be recalculated regardless of the values specified by users.
+                 */
+                drawTimeBackgroundHeight = mTimeBackgroundHeight;
+                drawTimeBackgroundPaddingTop = drawTimeBackgroundPaddingBottom = (mTimeBackgroundHeight - mTimeTextMeasuredHeight) / 2;
+            }
+        } else {
+            /*
+             * If the size of @timeBackgroundHeight has not been specified,
+             * the @timeBackground will be drawn according to its @mTimeTextMeasuredHeight and @paddings.
+             */
+            drawTimeBackgroundHeight = mTimeTextMeasuredHeight + mTimeBackgroundPaddingTop + mTimeBackgroundPaddingBottom;
+        }
+
+        if (mTimeTextLetterBackgroundSpacing > 0) {//Split timeBackground.
+            initDrawWidthValuesWhenSplitting();
+        } else {//Time text is a whole.
+            //Do it when drawing.
+        }
+    }
+
+    private void initDrawWidthValuesWhenSplitting() {
+        //If has specified the size of @timeBackgroundWidth.
+        if (mTimeBackgroundWidth > 0) {
+            if (mTimeBackgroundWidth < mTimeTextLetterMeasuredWidth) {
+                drawTimeBackgroundWidth = mTimeTextLetterMeasuredWidth;
+                drawTimeBackgroundPaddingLeft = drawTimeBackgroundPaddingRight = 0;
+            } else {
+                /*
+                 * If the size of @timeBackgroundWidth has been specified by users,
+                 * the paddings will be recalculated regardless of the values specified by users.
+                 */
+                drawTimeBackgroundWidth = mTimeBackgroundWidth;
+                drawTimeBackgroundPaddingLeft = drawTimeBackgroundPaddingRight = (mTimeBackgroundWidth - mTimeTextLetterMeasuredWidth) / 2;
+            }
+        } else {
+            /*
+             * If the size of @timeBackgroundWidth has not been specified,
+             * the @timeBackground will be drawn according to its @mTimeTextLetterMeasuredWidth and @paddings.
+             */
+            drawTimeBackgroundWidth = mTimeTextLetterMeasuredWidth + mTimeBackgroundPaddingLeft + mTimeBackgroundPaddingRight;
+        }
     }
 
     private float getSuffixDeltY2Base(String suffixText) {
@@ -382,8 +447,8 @@ public class CountdownView extends View {
             /**
              * The size of Rect is different between different languages.
              */
-            if (mSuffixTextHeight < minRect.height()) {
-                mSuffixTextHeight = minRect.height();
+            if (mSuffixTextMeasuredHeight < minRect.height()) {
+                mSuffixTextMeasuredHeight = minRect.height();
             }
 
             /**
@@ -442,9 +507,9 @@ public class CountdownView extends View {
 
     private float getTotalContentHeight() {
         return Utils.getMaxNum(new float[]{
-                mTimeTextHeight,
+                mTimeTextMeasuredHeight,
                 mTimeBackgroundHeight,
-                mSuffixTextHeight,
+                mSuffixTextMeasuredHeight,
                 mSuffixBackgroundHeight});
     }
 
@@ -504,6 +569,7 @@ public class CountdownView extends View {
 
     /**
      * Get the String of @time.
+     *
      * @param time
      * @param minLength The minimum length of @time String.
      * @return
@@ -522,100 +588,146 @@ public class CountdownView extends View {
 
     private float drawTimeSuffixItem(Canvas canvas, float left, String timeString, String timeSuffix, float suffixTextWidth, float baseline) {
         //Draw time content.
-        float timeBgWidth = mTimeBackgroundWidth;
-
         if (mTimeTextLetterBackgroundSpacing > 0) {//Split timeBackground.
-            if (timeBgWidth < mTimeTextLetterMeasuredWidth) {
-                timeBgWidth = mTimeTextLetterMeasuredWidth;
-            }
-            timeBgWidth += mTimeBackgroundPaddingLeft + mTimeBackgroundPaddingRight;
-
             for (int i = 0; i < timeString.length(); i++) {
                 //Draw time background.
                 if (mTimeBackground != null) {
                     mTimeBackground.setBounds((int) left,
-                            (int) (getTotalContentHeight() - mTimeBackgroundHeight) / 2,
-                            (int) (left + timeBgWidth),
-                            (int) (getTotalContentHeight() + mTimeBackgroundHeight) / 2);
+                            (int) (canvas.getHeight() - drawTimeBackgroundHeight) / 2,
+                            (int) (left + drawTimeBackgroundWidth),
+                            (int) (canvas.getHeight() + drawTimeBackgroundHeight) / 2);
                     mTimeBackground.draw(canvas);
                 }
 
                 //Draw time text.
                 canvas.drawText(String.valueOf(timeString.charAt(i)),
-                        left + mTimeBackgroundPaddingLeft + (mTimeTextLetterMeasuredWidth) / 2,
-                        (int) (getTotalContentHeight() + mTimeTextHeight) / 2, //Baseline of numeric character is the bottom of it.
+                        left + drawTimeBackgroundPaddingLeft + (mTimeTextLetterMeasuredWidth) / 2,
+                        (int) (canvas.getHeight() + mTimeTextMeasuredHeight) / 2, //Baseline of numeric letter is the bottom of it.
                         mTimeTextPaint);
 
                 if (i < timeString.length() - 1) {
-                    left += mTimeBackgroundPaddingLeft + mTimeTextLetterMeasuredWidth + mTimeBackgroundPaddingRight + mTimeTextLetterBackgroundSpacing;
-                } else {//The last character
-                    left += mTimeBackgroundPaddingLeft + mTimeTextLetterMeasuredWidth + mTimeBackgroundPaddingRight;
+                    left += drawTimeBackgroundPaddingLeft + mTimeTextLetterMeasuredWidth + drawTimeBackgroundPaddingRight + mTimeTextLetterBackgroundSpacing;
+                } else {//The last letter.
+                    left += drawTimeBackgroundPaddingLeft + mTimeTextLetterMeasuredWidth + drawTimeBackgroundPaddingRight;
                 }
             }
         } else {//Time text is a whole.
-            //Draw time background.
-            if (timeBgWidth < mTimeTextLetterMeasuredWidth * timeString.length()) {
-                timeBgWidth = mTimeTextLetterMeasuredWidth * timeString.length();
-            }
-            timeBgWidth += mTimeBackgroundPaddingLeft
-                    + mTimeBackgroundPaddingRight
-                    + (timeString.length() - 1) * mTimeTextLetterSpacing;
+            initDrawWidthValuesWhenWhole(timeString.length());
 
+            //Draw time background.
             if (mTimeBackground != null) {
                 mTimeBackground.setBounds((int) left,
-                        (int) (getTotalContentHeight() - mTimeBackgroundHeight) / 2,
-                        (int) (left + timeBgWidth),
-                        (int) (getTotalContentHeight() + mTimeBackgroundHeight) / 2);
+                        (int) (canvas.getHeight() - drawTimeBackgroundHeight) / 2,
+                        (int) (left + drawTimeBackgroundWidth),
+                        (int) (canvas.getHeight() + drawTimeBackgroundHeight) / 2);
                 mTimeBackground.draw(canvas);
             }
 
             //Draw time text.
+            left += drawTimeBackgroundPaddingLeft;
             for (int i = 0; i < timeString.length(); i++) {
-                float temp_left = left;
-                if (i == 0) {
-                    temp_left += mTimeBackgroundPaddingLeft;
-                }
                 canvas.drawText(String.valueOf(timeString.charAt(i)),
-                        temp_left + (mTimeTextLetterMeasuredWidth) / 2,
-                        (int) (getTotalContentHeight() + mTimeTextHeight) / 2, //Baseline of numeric character is the bottom of it.
+                        left + (mTimeTextLetterMeasuredWidth) / 2,
+                        (int) (canvas.getHeight() + mTimeTextMeasuredHeight) / 2, //Baseline of numeric letter is the bottom of it.
                         mTimeTextPaint);
 
-                if (i == 0) {
-                    left += mTimeBackgroundPaddingLeft + mTimeTextLetterMeasuredWidth + mTimeTextLetterSpacing;
-                } else if (i < timeString.length() - 1) {
+                if (i < timeString.length() - 1) {
                     left += mTimeTextLetterMeasuredWidth + mTimeTextLetterSpacing;
-                } else {//The last character
-                    left += mTimeTextLetterMeasuredWidth + mTimeBackgroundPaddingRight;
+                } else {//The last letter.
+                    left += mTimeTextLetterMeasuredWidth + drawTimeBackgroundPaddingRight;
                 }
             }
         }
 
         //Draw suffix content.
         left += mSuffixTextLetterSpacing;
-        float suffixBgWidth = mSuffixBackgroundWidth;
-        if (suffixBgWidth < suffixTextWidth) {
-            suffixBgWidth = suffixTextWidth;
+
+        //Width values.
+        if (mSuffixBackgroundWidth > 0) {//If has specified the size of @suffixBackgroundWidth.
+            if (mSuffixBackgroundWidth < suffixTextWidth) {
+                drawSuffixBackgroundWidth = suffixTextWidth;
+                drawSuffixBackgroundPaddingLeft = drawSuffixBackgroundPaddingRight = 0;
+            } else {
+                /*
+                 * If the size of @suffixBackgroundWidth has been specified by users,
+                 * the paddings will be recalculated regardless of the values specified by users.
+                 */
+                drawSuffixBackgroundWidth = mSuffixBackgroundWidth;
+                drawSuffixBackgroundPaddingLeft = drawSuffixBackgroundPaddingRight = (mSuffixBackgroundWidth - suffixTextWidth) / 2;
+            }
+        } else {
+            /*
+             * If the size of @suffixBackgroundWidth has not been specified,
+             * the @suffixBackground will be drawn according to its @suffixTextWidth and @paddings.
+             */
+            drawSuffixBackgroundWidth = suffixTextWidth + mSuffixBackgroundPaddingLeft + mSuffixBackgroundPaddingRight;
         }
-        suffixBgWidth += mSuffixBackgroundPaddingLeft + mSuffixBackgroundPaddingRight;
+
+        //Height values.
+        if (mSuffixBackgroundHeight > 0) {//If has specified the size of @suffixBackgroundHeight.
+            if (mSuffixBackgroundHeight < mSuffixTextMeasuredHeight) {
+                drawSuffixBackgroundHeight = mSuffixTextMeasuredHeight;
+                drawSuffixBackgroundPaddingTop = drawSuffixBackgroundPaddingBottom = 0;
+            } else {
+                /*
+                 * If the size of @suffixBackgroundHeight has been specified by users,
+                 * the paddings will be recalculated regardless of the values specified by users.
+                 */
+                drawSuffixBackgroundHeight = mSuffixBackgroundHeight;
+                drawSuffixBackgroundPaddingTop = drawSuffixBackgroundPaddingBottom = (mSuffixBackgroundHeight - mSuffixTextMeasuredHeight) / 2;
+            }
+        } else {
+            /*
+             * If the size of @suffixBackgroundHeight has not been specified,
+             * the @suffixBackground will be drawn according to its @mSuffixTextMeasuredHeight and @paddings.
+             */
+            drawSuffixBackgroundHeight = mSuffixTextMeasuredHeight + mSuffixBackgroundPaddingTop + mSuffixBackgroundPaddingBottom;
+        }
 
         //Draw suffix background.
         if (mSuffixBackground != null) {
             mSuffixBackground.setBounds((int) left,
-                    (int) (getTotalContentHeight() - mSuffixBackgroundHeight) / 2,
-                    (int) (left + suffixBgWidth),
-                    (int) (getTotalContentHeight() + mSuffixBackgroundHeight) / 2);
+                    (int) (canvas.getHeight() - drawSuffixBackgroundHeight) / 2,
+                    (int) (left + drawSuffixBackgroundWidth),
+                    (int) (canvas.getHeight() + drawSuffixBackgroundHeight) / 2);
             mSuffixBackground.draw(canvas);
         }
 
         //Draw suffix text.
+        left += drawSuffixBackgroundPaddingLeft;
         canvas.drawText(timeSuffix,
-                left + mSuffixBackgroundPaddingLeft + suffixTextWidth / 2,
+                left + suffixTextWidth / 2,
                 (int) baseline,
                 mSuffixTextPaint);
 
-        left += mSuffixBackgroundPaddingLeft + suffixTextWidth + mSuffixBackgroundPaddingRight + mSuffixTextLetterSpacing;
+        left += suffixTextWidth + drawSuffixBackgroundPaddingRight + mSuffixTextLetterSpacing;
 
         return left;
+    }
+
+    private void initDrawWidthValuesWhenWhole(int letterCount) {
+        //If has specified the size of @timeBackgroundWidth.
+        if (mTimeBackgroundWidth > 0) {
+            if (mTimeBackgroundWidth < letterCount * mTimeTextLetterMeasuredWidth) {
+                drawTimeBackgroundWidth = letterCount * mTimeTextLetterMeasuredWidth;
+                drawTimeBackgroundPaddingLeft = drawTimeBackgroundPaddingRight = 0;
+            } else {
+                /*
+                 * If the size of @timeBackgroundWidth has been specified by users,
+                 * the paddings will be recalculated regardless of the values specified by users.
+                 */
+                drawTimeBackgroundWidth = mTimeBackgroundWidth;
+                drawTimeBackgroundPaddingLeft = drawTimeBackgroundPaddingRight = (mTimeBackgroundWidth - letterCount * mTimeTextLetterMeasuredWidth) / 2;
+            }
+        } else {
+            /*
+             * If the size of @timeBackgroundWidth has not been specified,
+             * the @timeBackground will be drawn according to its @mTimeTextLetterMeasuredWidth and @paddings.
+             */
+            drawTimeBackgroundWidth = letterCount * mTimeTextLetterMeasuredWidth
+                    + (letterCount - 1) * mTimeTextLetterSpacing
+                    + mTimeBackgroundPaddingLeft + mTimeBackgroundPaddingRight;
+        }
     }
 
    /* private Bitmap getBitmap(int drawableRes) {
