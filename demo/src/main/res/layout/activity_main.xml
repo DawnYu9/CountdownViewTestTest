@@ -3,21 +3,21 @@
     xmlns:cus="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="10dp">
 
     <cn.dawnyu.view.library.CountdownView
         android:id="@+id/countdownView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         cus:suffixBackground="@color/colorPrimary"
-        cus:suffixTextCharMargin="2dp"
+        cus:suffixBackgroundPadding="5dp"
         cus:suffixTextColor="#ffffff"
-        cus:suffixTextSize="40sp"
-        cus:timeBackground="@drawable/shape_solid_corner_3_pink"
-        cus:timeBackgroundHeight="16dp"
-        cus:timeBackgroundWidth="10dp"
-        cus:timeTextCharMargin="2dp"
+        cus:suffixTextSize="16sp"
+        cus:timeBackground="@color/colorAccent"
+        cus:timeBackgroundPadding="5dp"
+        cus:timeTextCharBackgroundMargin="5dp"
+        cus:timeTextCharMargin="5dp"
         cus:timeTextColor="#ffffff"
         cus:timeTextSize="13sp" />
 

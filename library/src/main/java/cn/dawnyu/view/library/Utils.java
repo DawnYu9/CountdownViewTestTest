@@ -94,4 +94,14 @@ public class Utils {
         }
         return max;
     }
+
+    public static float getMinNum(float[] numArray) {
+        float min = numArray[0];
+        for (float num : numArray) {
+            if (min > num) {
+                min = num;
+            }
+        }
+        return min;
+    }
 }
