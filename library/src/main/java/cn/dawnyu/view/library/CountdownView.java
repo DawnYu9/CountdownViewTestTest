@@ -372,7 +372,7 @@ public class CountdownView extends View {
         mSuffixMinuteDeltY2Base = getSuffixDeltY2Base(mSuffixMinute);
         mSuffixSecondDeltY2Base = getSuffixDeltY2Base(mSuffixSecond);
 
-        float deltHeight = getTotalContentHeight() / 2;
+        float deltHeight = getMeasuredTotalHeight() / 2;
 
         mSuffixDayBaseline = deltHeight - mSuffixDayDeltY2Base;
         mSuffixHourBaseline = deltHeight - mSuffixHourDeltY2Base;
@@ -463,13 +463,13 @@ public class CountdownView extends View {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 
-        int width = measureSize(1, getTotalContentWidth(), widthMeasureSpec);
-        int height = measureSize(2, (int) getTotalContentHeight(), heightMeasureSpec);
+        int width = measureSize(1, (int) getMeasuredTotalWidth(), widthMeasureSpec);
+        int height = measureSize(2, (int) getMeasuredTotalHeight(), heightMeasureSpec);
 
         setMeasuredDimension(width, height);
     }
 
-    private int getTotalContentWidth() {
+    private float getMeasuredTotalWidth() {
         //Total width of the content of all suffix.
         float suffixContentWidth = mSuffixTextTotalWidth
                 + mSuffixCount * 2 * (mSuffixTextLetterSpacing + mSuffixBackgroundPaddingLeft + mSuffixBackgroundPaddingRight);
@@ -505,7 +505,7 @@ public class CountdownView extends View {
         return (int) Math.ceil(suffixContentWidth + timeContentWidth);
     }
 
-    private float getTotalContentHeight() {
+    private float getMeasuredTotalHeight() {
         return Utils.getMaxNum(new float[]{
                 mTimeTextMeasuredHeight,
                 mTimeBackgroundHeight,
