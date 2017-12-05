@@ -213,8 +213,6 @@ public class CountdownView extends View {
         initSuffix();
 
         initTimeTextBounds();
-        initSuffixTextBounds();
-        measureDrawValues();
     }
 
     private void initPadding() {
@@ -392,7 +390,7 @@ public class CountdownView extends View {
         drawSuffixBackgroundPaddingTop = mSuffixBackgroundPaddingTop;
         drawSuffixBackgroundPaddingBottom = mSuffixBackgroundPaddingBottom;
 
-        //Height values.
+        //Time height values.
         if (mTimeBackgroundHeight > 0) { //If has specified the size of @timeBackgroundHeight.
             if (mTimeBackgroundHeight < mTimeTextMeasuredHeight) {
                 drawTimeBackgroundHeight = mTimeTextMeasuredHeight;
@@ -412,12 +410,27 @@ public class CountdownView extends View {
              */
             drawTimeBackgroundHeight = mTimeTextMeasuredHeight + mTimeBackgroundPaddingTop + mTimeBackgroundPaddingBottom;
         }
-//
-//        if (mTimeTextLetterBackgroundSpacing > 0) {//Split timeBackground.
-//            measureDrawWidthValuesWhenSplitting();
-//        } else {//Time text is a whole.
-//            //Do it when drawing.
-//        }
+
+        //Suffix height values.
+        if (mSuffixBackgroundHeight > 0) {//If has specified the size of @suffixBackgroundHeight.
+            if (mSuffixBackgroundHeight < mSuffixTextMeasuredHeight) {
+                drawSuffixBackgroundHeight = mSuffixTextMeasuredHeight;
+                drawSuffixBackgroundPaddingTop = drawSuffixBackgroundPaddingBottom = 0;
+            } else {
+                /*
+                 * If the size of @suffixBackgroundHeight has been specified by users,
+                 * the paddings will be recalculated regardless of the values specified by users.
+                 */
+                drawSuffixBackgroundHeight = mSuffixBackgroundHeight;
+                drawSuffixBackgroundPaddingTop = drawSuffixBackgroundPaddingBottom = (mSuffixBackgroundHeight - mSuffixTextMeasuredHeight) / 2;
+            }
+        } else {
+            /*
+             * If the size of @suffixBackgroundHeight has not been specified,
+             * the @suffixBackground will be drawn according to its @mSuffixTextMeasuredHeight and @paddings.
+             */
+            drawSuffixBackgroundHeight = mSuffixTextMeasuredHeight + mSuffixBackgroundPaddingTop + mSuffixBackgroundPaddingBottom;
+        }
     }
 
     private void measureDrawWidthValuesWhenSplitting() {
@@ -470,6 +483,9 @@ public class CountdownView extends View {
 
         int width = measureSize(1, (int) getMeasuredTotalWidth(), widthMeasureSpec);
         int height = measureSize(2, (int) getMeasuredTotalHeight(), heightMeasureSpec);
+
+        initSuffixTextBounds();
+        measureDrawValues();
 
         setMeasuredDimension(width, height);
     }
@@ -536,10 +552,8 @@ public class CountdownView extends View {
 
     private float getMeasuredTotalHeight() {
         return Utils.getMaxNum(new float[]{
-                mTimeTextMeasuredHeight,
-                mTimeBackgroundHeight,
-                mSuffixTextMeasuredHeight,
-                mSuffixBackgroundHeight});
+                drawTimeBackgroundHeight,
+                drawSuffixBackgroundHeight});
     }
 
     /**
@@ -690,27 +704,6 @@ public class CountdownView extends View {
              * the @suffixBackground will be drawn according to its @suffixTextWidth and @paddings.
              */
             drawSuffixBackgroundWidth = suffixTextWidth + mSuffixBackgroundPaddingLeft + mSuffixBackgroundPaddingRight;
-        }
-
-        //Height values.
-        if (mSuffixBackgroundHeight > 0) {//If has specified the size of @suffixBackgroundHeight.
-            if (mSuffixBackgroundHeight < mSuffixTextMeasuredHeight) {
-                drawSuffixBackgroundHeight = mSuffixTextMeasuredHeight;
-                drawSuffixBackgroundPaddingTop = drawSuffixBackgroundPaddingBottom = 0;
-            } else {
-                /*
-                 * If the size of @suffixBackgroundHeight has been specified by users,
-                 * the paddings will be recalculated regardless of the values specified by users.
-                 */
-                drawSuffixBackgroundHeight = mSuffixBackgroundHeight;
-                drawSuffixBackgroundPaddingTop = drawSuffixBackgroundPaddingBottom = (mSuffixBackgroundHeight - mSuffixTextMeasuredHeight) / 2;
-            }
-        } else {
-            /*
-             * If the size of @suffixBackgroundHeight has not been specified,
-             * the @suffixBackground will be drawn according to its @mSuffixTextMeasuredHeight and @paddings.
-             */
-            drawSuffixBackgroundHeight = mSuffixTextMeasuredHeight + mSuffixBackgroundPaddingTop + mSuffixBackgroundPaddingBottom;
         }
 
         //Draw suffix background.
