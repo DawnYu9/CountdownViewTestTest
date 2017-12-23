@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 /**
@@ -55,7 +56,7 @@ public class CountdownView extends View {
     /**
      * Margin between the adjacent time text and suffix text.
      */
-    private float mSuffixTextLetterSpacing;
+    private float mSuffixTextMargin;
     private Drawable mSuffixBackground;
     private float mSuffixBackgroundWidth;
     private float mSuffixBackgroundHeight;
@@ -83,6 +84,7 @@ public class CountdownView extends View {
     private float mSuffixHourBaseline;
     private float mSuffixMinuteBaseline;
     private float mSuffixSecondBaseline;
+    private float mSuffixBaseline;
 
     private float drawTimeBackgroundWidth = 0;
     private float drawTimeBackgroundHeight = 0;
@@ -122,6 +124,10 @@ public class CountdownView extends View {
     public long mDays, mHours, mMinutes, mSeconds;
 
     private MyCountDownTimer myCountDownTimer;
+    private float mTimeBaseline;
+    private float mTimeDeltY2Base;
+    private Paint.FontMetrics mTimeTextPaintFontMetrics;
+    private Paint.FontMetrics mSuffixTextPaintFontMetrics;
 
     public CountdownView(Context context) {
         this(context, null);
@@ -159,7 +165,7 @@ public class CountdownView extends View {
         mSuffixTextColor = mTypedArray.getColor(R.styleable.CountdownView_suffixTextColor, Color.BLACK);
         isSuffixTextBold = mTypedArray.getBoolean(R.styleable.CountdownView_isSuffixTextBold, false);
 
-        mSuffixTextLetterSpacing = mTypedArray.getDimensionPixelSize(R.styleable.CountdownView_suffixTextLetterSpacing, Utils.getDip2Px(context, 0));
+        mSuffixTextMargin = mTypedArray.getDimensionPixelSize(R.styleable.CountdownView_suffixTextMargin, Utils.getDip2Px(context, 0));
 
         mSuffixBackground = mTypedArray.getDrawable(R.styleable.CountdownView_suffixBackground);
         mSuffixBackgroundWidth = mTypedArray.getDimensionPixelSize(R.styleable.CountdownView_suffixBackgroundWidth, Utils.getDip2Px(context, 0));
@@ -192,10 +198,7 @@ public class CountdownView extends View {
             this.mTimeFormat = mTimeFormat;
         }
 
-        mDays = (int) (millisecond / 1000 / (60 * 60 * 24));
-        mHours = (int) ((millisecond / 1000 / (60 * 60)) % 24);
-        mMinutes = (int) ((millisecond / 1000 / 60) % 60);
-        mSeconds = (int) (millisecond / 1000 % 60);
+        getTimeByMillis(millisecond);
 
         init();
 
@@ -205,14 +208,19 @@ public class CountdownView extends View {
         myCountDownTimer.start();
     }
 
+    private void getTimeByMillis(long millisecond) {
+        mDays = (int) (millisecond / 1000 / (60 * 60 * 24));
+        mHours = (int) ((millisecond / 1000 / (60 * 60)) % 24);
+        mMinutes = (int) ((millisecond / 1000 / 60) % 60);
+        mSeconds = (int) (millisecond / 1000 % 60);
+    }
+
     private void init() {
         initPadding();
 
         initPaint();
 
         initSuffix();
-
-        initTimeTextBounds();
     }
 
     private void initPadding() {
@@ -286,6 +294,7 @@ public class CountdownView extends View {
 
         //Has day
         if (mIndexDay > -1) {
+            mTimeTypeCount++;
             showDays = true;
 
             //Has day suffix
@@ -356,26 +365,6 @@ public class CountdownView extends View {
         Rect rect = new Rect();
         paint.getTextBounds(text, 0, text.length(), rect);
         return rect;
-    }
-
-    private void initTimeTextBounds() {
-        Rect rect = getTextBounds("0", mTimeTextPaint);
-        mTimeTextLetterMeasuredWidth = rect.width();
-        mTimeTextMeasuredHeight = rect.height();
-    }
-
-    private void initSuffixTextBounds() {
-        mSuffixDayDeltY2Base = getSuffixDeltY2Base(mSuffixDay);
-        mSuffixHourDeltY2Base = getSuffixDeltY2Base(mSuffixHour);
-        mSuffixMinuteDeltY2Base = getSuffixDeltY2Base(mSuffixMinute);
-        mSuffixSecondDeltY2Base = getSuffixDeltY2Base(mSuffixSecond);
-
-        float deltHeight = getMeasuredTotalHeight() / 2;
-
-        mSuffixDayBaseline = deltHeight - mSuffixDayDeltY2Base;
-        mSuffixHourBaseline = deltHeight - mSuffixHourDeltY2Base;
-        mSuffixMinuteBaseline = deltHeight - mSuffixMinuteDeltY2Base;
-        mSuffixSecondBaseline = deltHeight - mSuffixSecondDeltY2Base;
     }
 
     private void measureDrawValues() {
@@ -480,14 +469,61 @@ public class CountdownView extends View {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        initTextBounds();
 
-        int width = measureSize(1, (int) getMeasuredTotalWidth(), widthMeasureSpec);
-        int height = measureSize(2, (int) getMeasuredTotalHeight(), heightMeasureSpec);
+        int width = measureSize(1, getMeasuredTotalWidth(), widthMeasureSpec);
+        int height = measureSize(2, getMeasuredTotalHeight(), heightMeasureSpec);
 
-        initSuffixTextBounds();
+        initBaseline(height);
+
         measureDrawValues();
 
         setMeasuredDimension(width, height);
+    }
+
+    private void initTextBounds() {
+        //Time.
+        mTimeTextPaintFontMetrics = mTimeTextPaint.getFontMetrics();
+        for (int i = 0; i < 10; i++) {
+            Rect r = getTextBounds(String.valueOf(i), mTimeTextPaint);
+            if (mTimeTextLetterMeasuredWidth < r.width()) {
+                mTimeTextLetterMeasuredWidth = r.width();
+            }
+//            if (mTimeTextMeasuredHeight < r.height()) {
+//                mTimeTextMeasuredHeight = r.height();
+//            }
+            Log.i("test: " + i + ".height = ", String.valueOf(r.height()) + ",ascent = " + mTimeTextPaintFontMetrics.ascent + ",delt = " + String.valueOf(r.height() + r.top));
+        }
+        mTimeTextMeasuredHeight = mTimeTextPaintFontMetrics.bottom - mTimeTextPaintFontMetrics.top;
+
+        String s = "小时分钟秒";
+        mSuffixTextPaintFontMetrics = mSuffixTextPaint.getFontMetrics();
+        Rect sufRect = getTextBounds(mSuffixDay + mSuffixHour + mSuffixMinute + mSuffixSecond, mSuffixTextPaint);
+        mSuffixTextMeasuredHeight = mSuffixTextPaintFontMetrics.bottom - mSuffixTextPaintFontMetrics.top;
+
+
+//        Rect minRect = getTextBounds("4", mTimeTextPaint);
+//        mTimeTextLetterMeasuredWidth = minRect.width();
+//        mTimeTextMeasuredHeight = minRect.height();
+//        mTimeDeltY2Base = minRect.height() / 2 + minRect.top;
+
+        //Suffix.
+//        mSuffixDayDeltY2Base = getSuffixDeltY2Base(mSuffixDay);
+//        mSuffixHourDeltY2Base = getSuffixDeltY2Base(mSuffixHour);
+//        mSuffixMinuteDeltY2Base = getSuffixDeltY2Base(mSuffixMinute);
+//        mSuffixSecondDeltY2Base = getSuffixDeltY2Base(mSuffixSecond);
+    }
+
+    private void initBaseline(int height) {
+//        mTimeBaseline = height / 2 - mTimeDeltY2Base;
+        mTimeBaseline = (height + mTimeTextMeasuredHeight) / 2 - mTimeTextPaintFontMetrics.bottom;
+        mSuffixBaseline = (height + mSuffixTextMeasuredHeight) / 2 - mSuffixTextPaintFontMetrics.bottom;
+
+        float suffixDeltHeight = height / 2;
+        mSuffixDayBaseline = suffixDeltHeight - mSuffixDayDeltY2Base;
+        mSuffixHourBaseline = suffixDeltHeight - mSuffixHourDeltY2Base;
+        mSuffixMinuteBaseline = suffixDeltHeight - mSuffixMinuteDeltY2Base;
+        mSuffixSecondBaseline = suffixDeltHeight - mSuffixSecondDeltY2Base;
     }
 
     private float getMeasuredTotalWidth() {
@@ -498,7 +534,7 @@ public class CountdownView extends View {
             measureDrawWidthValuesWhenSplitting();
 
             timeBackgroundCount = 6;
-            if (mDays > 0) {
+            if (showDays && mDays > 0) {
                 timeBackgroundCount += getTimeString(mDays, 0).length();
             }
 
@@ -506,18 +542,22 @@ public class CountdownView extends View {
                     + (getTimeString(mDays, 0).length() - 1 + 3) * mTimeTextLetterBackgroundSpacing;
         } else {//Time text is a whole.
             timeBackgroundCount = 3;
-            if (mDays > 0) {
-                totalTimeWidth = measureDrawWidthValuesWhenWhole(getTimeString(mDays, 0).length());
+            if (showDays && mDays > 0) {
+                totalTimeWidth = measureTimeWidthWhenWhole(getTimeString(mDays, 0).length());
             }
-            totalTimeWidth += timeBackgroundCount * measureDrawWidthValuesWhenWhole(2);
+            totalTimeWidth += timeBackgroundCount * measureTimeWidthWhenWhole(2);
         }
 
         //Suffix.
+        int suffixTextMarginCount = mSuffixCount * 2;
+        if (mTimeTypeCount == mSuffixCount) {
+            suffixTextMarginCount--;
+        }
         float totalSuffixWidth = measureSuffixWidth(mSuffixDayTextWidth)
                 + measureSuffixWidth(mSuffixHourTextWidth)
                 + measureSuffixWidth(mSuffixMinuteTextWidth)
                 + measureSuffixWidth(mSuffixSecondTextWidth)
-                + (mSuffixCount * 2 - 1) * mSuffixTextLetterSpacing;
+                + suffixTextMarginCount * mSuffixTextMargin;
 
         return totalTimeWidth + totalSuffixWidth;
     }
@@ -564,8 +604,8 @@ public class CountdownView extends View {
      * @param measureSpec spec
      * @return measureSize
      */
-    private int measureSize(int specType, int contentSize, int measureSpec) {
-        int size;
+    private int measureSize(int specType, float contentSize, int measureSpec) {
+        double size;
         int specMode = MeasureSpec.getMode(measureSpec);
         int specSize = MeasureSpec.getSize(measureSpec);
 
@@ -583,12 +623,12 @@ public class CountdownView extends View {
             }
         }
 
-        return size;
+        return (int) Math.ceil(size);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        float left = 0;
+        float left = (canvas.getWidth() - getMeasuredTotalWidth()) / 2;
         //Day
         if (showDays && mDays > 0) {
             left = drawTimeSuffixItem(canvas, left, getTimeString(mDays, 0), mSuffixDay, mSuffixDayTextWidth, mSuffixDayBaseline);
@@ -629,8 +669,9 @@ public class CountdownView extends View {
         return timeString;
     }
 
-    private float drawTimeSuffixItem(Canvas canvas, float left, String timeString, String timeSuffix, float suffixTextWidth, float baseline) {
+    private float drawTimeSuffixItem(Canvas canvas, float left, String timeString, String suffix, float suffixTextWidth, float baseline) {
         //Draw time content.
+        Paint.FontMetrics mTimeTextPaintFontMetrics = mTimeTextPaint.getFontMetrics();
         if (mTimeTextLetterBackgroundSpacing > 0) {//Split timeBackground.
             for (int i = 0; i < timeString.length(); i++) {
                 //Draw time background.
@@ -645,7 +686,8 @@ public class CountdownView extends View {
                 //Draw time text.
                 canvas.drawText(String.valueOf(timeString.charAt(i)),
                         left + drawTimeBackgroundPaddingLeft + (mTimeTextLetterMeasuredWidth) / 2,
-                        (int) (canvas.getHeight() + mTimeTextMeasuredHeight) / 2, //Baseline of numeric letter is the bottom of it.
+//                        (canvas.getHeight() + mTimeTextMeasuredHeight) / 2,
+                        mTimeBaseline,
                         mTimeTextPaint);
 
                 left += drawTimeBackgroundWidth;
@@ -654,7 +696,7 @@ public class CountdownView extends View {
                 }
             }
         } else {//Time text is a whole.
-            measureDrawWidthValuesWhenWhole(timeString.length());
+            measureTimeWidthWhenWhole(timeString.length());
 
             //Draw time background.
             if (mTimeBackground != null) {
@@ -670,7 +712,8 @@ public class CountdownView extends View {
             for (int i = 0; i < timeString.length(); i++) {
                 canvas.drawText(String.valueOf(timeString.charAt(i)),
                         left + (mTimeTextLetterMeasuredWidth) / 2,
-                        (int) (canvas.getHeight() + mTimeTextMeasuredHeight) / 2, //Baseline of numeric letter is the bottom of it.
+//                        (canvas.getHeight() + mTimeTextMeasuredHeight) / 2,
+                        mTimeBaseline,
                         mTimeTextPaint);
 
                 left += mTimeTextLetterMeasuredWidth;
@@ -683,7 +726,10 @@ public class CountdownView extends View {
         }
 
         //Draw suffix content.
-        left += mSuffixTextLetterSpacing;
+        left += mSuffixTextMargin;
+        if (Utils.isNullOrEmpty(suffix)) {
+            return left;
+        }
 
         //Width values.
         if (mSuffixBackgroundWidth > 0) {//If has specified the size of @suffixBackgroundWidth.
@@ -716,17 +762,18 @@ public class CountdownView extends View {
         }
 
         //Draw suffix text.
-        canvas.drawText(timeSuffix,
+        canvas.drawText(suffix,
                 left + drawSuffixBackgroundPaddingLeft + suffixTextWidth / 2,
-                (int) baseline,
+//                baseline,
+                mSuffixBaseline,
                 mSuffixTextPaint);
 
-        left += drawSuffixBackgroundWidth + mSuffixTextLetterSpacing;
+        left += drawSuffixBackgroundWidth + mSuffixTextMargin;
 
         return left;
     }
 
-    private float measureDrawWidthValuesWhenWhole(int letterCount) {
+    private float measureTimeWidthWhenWhole(int letterCount) {
         //If has specified the size of @timeBackgroundWidth.
         if (mTimeBackgroundWidth > 0) {
             if (mTimeBackgroundWidth < letterCount * mTimeTextLetterMeasuredWidth + (letterCount - 1) * mTimeTextLetterSpacing) {
@@ -789,14 +836,9 @@ public class CountdownView extends View {
 
         @Override
         public void onTick(long millisUntilFinished) {
-//            diffTime = millisUntilFinished / 1000;
-//
-//            mDays = diffTime / (60 * 60 * 24);
-//            mHours = (diffTime / (60 * 60)) % 24;
-//            mMinutes = (diffTime / 60) % 60;
-//            mSeconds = diffTime % 60;
-//
-//            refresh();//todo
+            getTimeByMillis(millisUntilFinished);
+
+            refresh();
         }
     }
 

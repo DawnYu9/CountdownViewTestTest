@@ -23,7 +23,7 @@
         <attr name="suffixTextSize" format="dimension" />
         <attr name="suffixTextColor" format="color" />
         <attr name="isSuffixTextBold" format="boolean" />
-        <attr name="suffixTextLetterSpacing" format="dimension" />
+        <attr name="suffixTextMargin" format="dimension" />
         <attr name="suffixBackground" format="reference|color" />
         <attr name="suffixBackgroundWidth" format="dimension" />
         <attr name="suffixBackgroundHeight" format="dimension" />
