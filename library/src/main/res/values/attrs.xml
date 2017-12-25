@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="CountdownView">
-        <attr name="isAllCharacterCenterInVertical" format="boolean" />
-        <attr name="isSameBaseline" format="boolean" />
+        <attr name="includeFontPadding" format="boolean" />
 
         <attr name="timeTextSize" format="dimension" />
         <attr name="timeTextColor" format="color" />
