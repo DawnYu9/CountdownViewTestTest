@@ -194,10 +194,6 @@ public class CountdownView extends View {
      *                    例："dd天hh:mm:ss", "hh小时mm分钟ss秒"
      */
     public void start(long millisecond, String mTimeFormat) {
-        if (millisecond <= 0) {
-            return;
-        }
-
         if (!Utils.isNullOrEmpty(mTimeFormat)) {
             this.mTimeFormat = mTimeFormat;
         }
