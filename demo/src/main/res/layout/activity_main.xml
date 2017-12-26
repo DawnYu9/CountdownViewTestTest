@@ -10,7 +10,7 @@
         android:id="@+id/countdownView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        cus:includeFontPadding="true"
+        cus:includeFontPadding="false"
         cus:suffixBackground="@color/colorPrimary"
         cus:suffixTextColor="@android:color/white"
         cus:suffixTextMargin="2dp"
@@ -25,6 +25,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/colorPrimary"
+        android:includeFontPadding="false"
         android:text="sec"
         android:textColor="@android:color/white"
         android:textSize="16sp" />

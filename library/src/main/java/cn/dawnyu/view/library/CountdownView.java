@@ -295,7 +295,7 @@ public class CountdownView extends View {
         int mIndexSecond = mTimeFormat.indexOf("ss");
 
         //Has day
-        if (mIndexDay > -1) {
+        if (mIndexDay > -1 && mDays > 0) {
             mTimeTypeCount++;
             showDays = true;
 
@@ -550,16 +550,18 @@ public class CountdownView extends View {
             timeBackgroundCount = 6;
             if (showDays && mDays > 0) {
                 timeBackgroundCount += getTimeString(mDays, 0).length();
+                totalTimeWidth = timeBackgroundCount * drawTimeBackgroundWidth
+                        + (getTimeString(mDays, 0).length() - 1 + 3) * mTimeTextLetterBackgroundSpacing;
+            } else {
+                totalTimeWidth = timeBackgroundCount * drawTimeBackgroundWidth
+                        + 3 * mTimeTextLetterBackgroundSpacing;
             }
-
-            totalTimeWidth = timeBackgroundCount * drawTimeBackgroundWidth
-                    + (getTimeString(mDays, 0).length() - 1 + 3) * mTimeTextLetterBackgroundSpacing;
         } else {//Time text is a whole.
             timeBackgroundCount = 3;
-            if (showDays && mDays > 0) {
-                totalTimeWidth = measureTimeWidthWhenWhole(getTimeString(mDays, 0).length());
-            }
             totalTimeWidth += timeBackgroundCount * measureTimeWidthWhenWhole(2);
+            if (showDays && mDays > 0) {
+                totalTimeWidth += measureTimeWidthWhenWhole(getTimeString(mDays, 0).length());
+            }
         }
 
         //Suffix.
@@ -567,12 +569,13 @@ public class CountdownView extends View {
         if (mTimeTypeCount == mSuffixCount) {
             suffixTextMarginCount--;
         }
-        float totalSuffixWidth = measureSuffixWidth(mSuffixDayTextWidth)
-                + measureSuffixWidth(mSuffixHourTextWidth)
+        float totalSuffixWidth = measureSuffixWidth(mSuffixHourTextWidth)
                 + measureSuffixWidth(mSuffixMinuteTextWidth)
                 + measureSuffixWidth(mSuffixSecondTextWidth)
                 + suffixTextMarginCount * mSuffixTextMargin;
-
+        if (showDays && mDays > 0) {
+            totalSuffixWidth += measureSuffixWidth(mSuffixDayTextWidth);
+        }
         return totalTimeWidth + totalSuffixWidth;
     }
 
