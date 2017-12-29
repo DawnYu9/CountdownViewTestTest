@@ -18,8 +18,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        String timeFormat = "dddayhhhourmmminsssec";
-        String date = "2017-12-26 20:00:00";
+        String timeFormat = "dddayhhhmmmsss";
+        String date = "2017-12-28 20:00:00";
         CountdownView countdownView = (CountdownView) findViewById(R.id.countdownView);
         countdownView.start(getDate(date).getTime() - System.currentTimeMillis(), timeFormat);
     }

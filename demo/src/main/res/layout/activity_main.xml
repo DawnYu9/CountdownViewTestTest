@@ -10,48 +10,19 @@
         android:id="@+id/countdownView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@android:color/darker_gray"
         cus:includeFontPadding="false"
         cus:suffixBackground="@color/colorPrimary"
+        cus:suffixBackgroundPadding="2dp"
         cus:suffixTextColor="@android:color/white"
         cus:suffixTextMargin="2dp"
-        cus:suffixTextSize="16sp"
+        cus:suffixTextSize="13sp"
         cus:timeBackground="@color/colorAccent"
+        cus:timeBackgroundPadding="10dp"
+        cus:suffixBackgroundHeight="50dp"
         cus:timeTextColor="@android:color/white"
         cus:timeTextLetterBackgroundSpacing="3dp"
         cus:timeTextLetterSpacing="5dp"
         cus:timeTextSize="16sp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/colorPrimary"
-        android:includeFontPadding="false"
-        android:text="sec"
-        android:textColor="@android:color/white"
-        android:textSize="16sp" />
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/colorAccent"
-            android:includeFontPadding="false"
-            android:text="1af8jlpRQ2你好"
-            android:textColor="@android:color/white"
-            android:textSize="30sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/colorPrimary"
-            android:text="dayhourminsec"
-            android:textColor="@android:color/white"
-            android:textSize="16sp" />
-    </LinearLayout>
-
 
 </LinearLayout>
