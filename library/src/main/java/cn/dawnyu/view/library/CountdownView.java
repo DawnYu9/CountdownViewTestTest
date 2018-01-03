@@ -1,7 +1,9 @@
 package cn.dawnyu.view.library;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -181,7 +183,7 @@ public class CountdownView extends View {
      * Start to count down.
      *
      * @param millisInFuture Time length.
-     * @param timeFormat     Eg:"dd天hh:mm:ss", "hh小时mm分钟ss秒"
+     * @param timeFormat     Eg:"dddayhh:mm:ss", "hh小时mm分钟ss秒"
      */
     public void start(long millisInFuture, String timeFormat) {
         if (!Utils.isNullOrEmpty(timeFormat)) {
@@ -373,7 +375,7 @@ public class CountdownView extends View {
                 drawTimeBackgroundHeight = mTimeTextMeasuredHeight;
                 drawTimeBackgroundPaddingTop = drawTimeBackgroundPaddingBottom = 0;
             } else {
-                /**
+                /*
                  * If the size of {@link #mTimeBackgroundHeight} has been specified by users,
                  * the paddings will be recalculated regardless of the values specified by users.
                  */
@@ -381,7 +383,7 @@ public class CountdownView extends View {
                 drawTimeBackgroundPaddingTop = drawTimeBackgroundPaddingBottom = (mTimeBackgroundHeight - mTimeTextMeasuredHeight) / 2;
             }
         } else {
-            /**
+            /*
              * If the size of {@link #mTimeBackgroundHeight} has not been specified,
              * the {@link #mTimeBackground} will be drawn according to its {@link #mTimeTextMeasuredHeight} and paddings.
              */
@@ -394,15 +396,15 @@ public class CountdownView extends View {
                 drawSuffixBackgroundHeight = mSuffixTextMeasuredHeight;
                 drawSuffixBackgroundPaddingTop = drawSuffixBackgroundPaddingBottom = 0;
             } else {
-                /**
+                /*
                  * If the size of {@link #mSuffixBackgroundHeight} has been specified by users,
-                 * the paddings will be recalculated regardless of the values specified by users.
+                 * the paddings will be recalculated.
                  */
                 drawSuffixBackgroundHeight = mSuffixBackgroundHeight;
                 drawSuffixBackgroundPaddingTop = drawSuffixBackgroundPaddingBottom = (mSuffixBackgroundHeight - mSuffixTextMeasuredHeight) / 2;
             }
         } else {
-            /**
+            /*
              * If the size of {@link #mSuffixBackgroundHeight} has not been specified,
              * the {@link #mSuffixBackground} will be drawn according to its {@link #mSuffixTextMeasuredHeight} and paddings.
              */
@@ -417,7 +419,7 @@ public class CountdownView extends View {
                 drawTimeBackgroundWidth = mTimeTextLetterMeasuredWidth;
                 drawTimeBackgroundPaddingLeft = drawTimeBackgroundPaddingRight = 0;
             } else {
-                /**
+                /*
                  * If the size of {@link #mTimeBackgroundWidth} has been specified by users,
                  * the paddings will be recalculated.
                  */
@@ -425,7 +427,7 @@ public class CountdownView extends View {
                 drawTimeBackgroundPaddingLeft = drawTimeBackgroundPaddingRight = (mTimeBackgroundWidth - mTimeTextLetterMeasuredWidth) / 2;
             }
         } else {
-            /**
+            /*
              * If the size of {@link #mTimeBackgroundWidth} has not been specified,
              * the {@link #mTimeBackground} will be drawn according to its {@link #mTimeTextLetterMeasuredWidth} and paddings.
              */
@@ -523,12 +525,12 @@ public class CountdownView extends View {
             return 0;
         }
 
-        if (mSuffixBackgroundWidth > 0) {//If has specified the size of @suffixBackgroundWidth.
+        if (mSuffixBackgroundWidth > 0) {
             if (mSuffixBackgroundWidth < suffixWidth) {
                 drawSuffixBackgroundWidth = suffixWidth;
                 drawSuffixBackgroundPaddingLeft = drawSuffixBackgroundPaddingRight = 0;
             } else {
-                /**
+                /*
                  * If the size of {@link #mSuffixBackgroundWidth} has been specified by users,
                  * the paddings will be recalculated regardless of the values specified by users.
                  */
@@ -536,7 +538,7 @@ public class CountdownView extends View {
                 drawSuffixBackgroundPaddingLeft = drawSuffixBackgroundPaddingRight = (mSuffixBackgroundWidth - suffixWidth) / 2;
             }
         } else {
-            /**
+            /*
              * If the size of {@link #mSuffixBackgroundWidth} has not been specified,
              * the @suffixBackground will be drawn according to its @suffixTextWidth and @paddings.
              */
@@ -556,7 +558,7 @@ public class CountdownView extends View {
      * Measure view size.
      *
      * @param specType    1 width, 2 height
-     * @param contentSize all content view size
+     * @param contentSize all content's size
      * @param measureSpec spec
      * @return measureSize
      */
@@ -694,14 +696,14 @@ public class CountdownView extends View {
         }
 
         //Width values.
-        if (mSuffixBackgroundWidth > 0) {//If has specified the size of @suffixBackgroundWidth.
+        if (mSuffixBackgroundWidth > 0) {
             if (mSuffixBackgroundWidth < suffixTextWidth) {
                 drawSuffixBackgroundWidth = suffixTextWidth;
                 drawSuffixBackgroundPaddingLeft = drawSuffixBackgroundPaddingRight = 0;
             } else {
                 /*
                  * If the size of @suffixBackgroundWidth has been specified by users,
-                 * the paddings will be recalculated regardless of the values specified by users.
+                 * the paddings will be recalculated.
                  */
                 drawSuffixBackgroundWidth = mSuffixBackgroundWidth;
                 drawSuffixBackgroundPaddingLeft = drawSuffixBackgroundPaddingRight = (mSuffixBackgroundWidth - suffixTextWidth) / 2;
@@ -731,14 +733,14 @@ public class CountdownView extends View {
             if (!Utils.isNullOrEmpty(suffix)) {
                 Rect minRect = getTextBounds(suffix, mSuffixTextPaint);
 
-                /**
+                /*
                  * The size of Rect is different between different languages.
                  */
                 if (mSuffixTextMeasuredHeight < minRect.height()) {
                     mSuffixTextMeasuredHeight = minRect.height();
                 }
 
-                /**
+                /*
                  * The position of baseline is different between different languages.
                  */
                 deltY = minRect.height() / 2 + minRect.top;
@@ -757,7 +759,6 @@ public class CountdownView extends View {
     }
 
     private float measureTimeWidthWhenWhole(int letterCount) {
-        //If has specified the size of @timeBackgroundWidth.
         if (mTimeBackgroundWidth > 0) {
             if (mTimeBackgroundWidth < letterCount * mTimeTextLetterMeasuredWidth + (letterCount - 1) * mTimeTextLetterSpacing) {
                 drawTimeBackgroundWidth = letterCount * mTimeTextLetterMeasuredWidth + (letterCount - 1) * mTimeTextLetterSpacing;
@@ -783,22 +784,6 @@ public class CountdownView extends View {
 
         return drawTimeBackgroundWidth;
     }
-
-   /* private Bitmap getBitmap(int drawableRes) {
-        try {
-            Drawable drawable = getResources().getDrawable(drawableRes);
-            Canvas canvas = new Canvas();
-            Bitmap bitmap = Bitmap.createBitmap((int) mTimeBackgroundWidth, (int) mTimeBackgroundHeight, Bitmap.Config.ARGB_8888);
-            canvas.setBitmap(bitmap);
-            drawable.setBounds(0, 0, (int) mTimeBackgroundWidth, (int) mTimeBackgroundHeight);
-            drawable.draw(canvas);
-
-            return bitmap;
-        } catch (Resources.NotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }*/
 
     class MyCountDownTimer extends CountDownTimer {
 
@@ -847,5 +832,133 @@ public class CountdownView extends View {
         if (myCountDownTimer != null) {
             myCountDownTimer.cancel();
         }
+    }
+
+    public void setTimeTextPaint(Paint timeTextPaint) {
+        this.mTimeTextPaint = timeTextPaint;
+    }
+
+    public void setSuffixTextPaint(Paint suffixTextPaint) {
+        this.mSuffixTextPaint = suffixTextPaint;
+    }
+
+    public void setIncludePad(boolean includePad) {
+        this.mIncludePad = includePad;
+    }
+
+    public void setTimeTextSize(int timeTextSize) {
+        this.mTimeTextSize = timeTextSize;
+    }
+
+    public void setTimeTextColor(int timeTextColor) {
+        this.mTimeTextColor = timeTextColor;
+    }
+
+    public void setTimeTextBold(boolean timeTextBold) {
+        isTimeTextBold = timeTextBold;
+    }
+
+    public void setTimeTextLetterSpacing(float timeTextLetterSpacing) {
+        this.mTimeTextLetterSpacing = timeTextLetterSpacing;
+    }
+
+    public void setTimeTextLetterBackgroundSpacing(float timeTextLetterBackgroundSpacing) {
+        this.mTimeTextLetterBackgroundSpacing = timeTextLetterBackgroundSpacing;
+    }
+
+    public void setTimeBackground(Drawable timeBackground) {
+        this.mTimeBackground = timeBackground;
+    }
+
+    public void setTimeBackgroundWidth(float timeBackgroundWidth) {
+        this.mTimeBackgroundWidth = timeBackgroundWidth;
+    }
+
+    public void setTimeBackgroundHeight(float timeBackgroundHeight) {
+        this.mTimeBackgroundHeight = timeBackgroundHeight;
+    }
+
+    public void setTimeBackgroundPadding(float timeBackgroundPadding) {
+        this.mTimeBackgroundPadding = timeBackgroundPadding;
+    }
+
+    public void setTimeBackgroundPaddingX(float timeBackgroundPaddingX) {
+        this.mTimeBackgroundPaddingX = timeBackgroundPaddingX;
+    }
+
+    public void setTimeBackgroundPaddingY(float timeBackgroundPaddingY) {
+        this.mTimeBackgroundPaddingY = timeBackgroundPaddingY;
+    }
+
+    public void setTimeBackgroundPaddingLeft(float timeBackgroundPaddingLeft) {
+        this.mTimeBackgroundPaddingLeft = timeBackgroundPaddingLeft;
+    }
+
+    public void setTimeBackgroundPaddingRight(float timeBackgroundPaddingRight) {
+        this.mTimeBackgroundPaddingRight = timeBackgroundPaddingRight;
+    }
+
+    public void setTimeBackgroundPaddingTop(float timeBackgroundPaddingTop) {
+        this.mTimeBackgroundPaddingTop = timeBackgroundPaddingTop;
+    }
+
+    public void setTimeBackgroundPaddingBottom(float timeBackgroundPaddingBottom) {
+        this.mTimeBackgroundPaddingBottom = timeBackgroundPaddingBottom;
+    }
+
+    public void setSuffixTextSize(int suffixTextSize) {
+        this.mSuffixTextSize = suffixTextSize;
+    }
+
+    public void setSuffixTextColor(int suffixTextColor) {
+        this.mSuffixTextColor = suffixTextColor;
+    }
+
+    public void setSuffixTextBold(boolean suffixTextBold) {
+        isSuffixTextBold = suffixTextBold;
+    }
+
+    public void setSuffixTextMargin(float suffixTextMargin) {
+        this.mSuffixTextMargin = suffixTextMargin;
+    }
+
+    public void setSuffixBackground(Drawable suffixBackground) {
+        this.mSuffixBackground = suffixBackground;
+    }
+
+    public void setSuffixBackgroundWidth(float suffixBackgroundWidth) {
+        this.mSuffixBackgroundWidth = suffixBackgroundWidth;
+    }
+
+    public void setSuffixBackgroundHeight(float suffixBackgroundHeight) {
+        this.mSuffixBackgroundHeight = suffixBackgroundHeight;
+    }
+
+    public void setSuffixBackgroundPadding(float suffixBackgroundPadding) {
+        this.mSuffixBackgroundPadding = suffixBackgroundPadding;
+    }
+
+    public void setSuffixBackgroundPaddingX(float suffixBackgroundPaddingX) {
+        this.mSuffixBackgroundPaddingX = suffixBackgroundPaddingX;
+    }
+
+    public void setSuffixBackgroundPaddingY(float suffixBackgroundPaddingY) {
+        this.mSuffixBackgroundPaddingY = suffixBackgroundPaddingY;
+    }
+
+    public void setSuffixBackgroundPaddingLeft(float suffixBackgroundPaddingLeft) {
+        this.mSuffixBackgroundPaddingLeft = suffixBackgroundPaddingLeft;
+    }
+
+    public void setSuffixBackgroundPaddingRight(float suffixBackgroundPaddingRight) {
+        this.mSuffixBackgroundPaddingRight = suffixBackgroundPaddingRight;
+    }
+
+    public void setSuffixBackgroundPaddingTop(float suffixBackgroundPaddingTop) {
+        this.mSuffixBackgroundPaddingTop = suffixBackgroundPaddingTop;
+    }
+
+    public void setSuffixBackgroundPaddingBottom(float suffixBackgroundPaddingBottom) {
+        this.mSuffixBackgroundPaddingBottom = suffixBackgroundPaddingBottom;
     }
 }
